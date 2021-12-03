@@ -1,5 +1,7 @@
 package next.controller;
 
+import com.sun.deploy.net.HttpRequest;
+import com.sun.deploy.net.HttpResponse;
 import core.db.DataBase;
 
 import javax.servlet.RequestDispatcher;
@@ -10,20 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/users")
-public class ListUserController extends HttpServlet {
+public class ListUserController implements Controller {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!UserSessionUtils.isLogined(req.getSession())) {
-            resp.sendRedirect("/users/loginForm");
-            return;
+    public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (!UserSessionUtils.isLogined(request.getSession())) {
+            return "redirect:/users/loginForm";
         }
 
-        req.setAttribute("users", DataBase.findAll());
-
-        RequestDispatcher rd = req.getRequestDispatcher("/user/list.jsp");
-        rd.forward(req, resp);
+        request.setAttribute("users", DataBase.findAll());
+        return "/user/list.jsp";
     }
 }
